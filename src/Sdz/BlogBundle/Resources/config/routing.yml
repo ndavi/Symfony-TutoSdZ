@@ -1,0 +1,4 @@
+# src/Sdz/BlogBundle/Resources/config/routing.yml
+redirect_home:
+    path:      /
+    defaults:  { _controller: SdzBlogBundle:Blog:index}

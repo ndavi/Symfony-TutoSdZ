@@ -64,18 +64,16 @@ class AdvertController extends Controller {
     }
 
     public function addAction(Request $request) {
+        // On récupère le service
+        $antispam = $this->container->get('oc_platform.antispam');
 
-        if ($request->isMethod('POST')) {
-            // Ici, on s'occupera de la création et de la gestion du formulaire
-
-            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
-
-            // Puis on redirige vers la page de visualisation de cettte annonce
-            return $this->redirect($this->generateUrl('oc_platform_view', array('id' => 5)));
+        // Je pars du principe que $text contient le texte d'un message quelconque
+        $text = '...';
+        if ($antispam->isSpam($text)) {
+            throw new \Exception('Votre message a été détecté comme spam !');
         }
 
-        // Si on n'est pas en POST, alors on affiche le formulaire
-        return $this->render('OCPlatformBundle:Advert:add.html.twig');
+        // Ici le message n'est pas un spam
     }
 
     public function editAction($id, Request $request) {

@@ -4,6 +4,7 @@
 
 namespace OC\PlatformBundle\Controller;
 
+use OC\PlatformBundle\Entity\Advert;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -34,13 +35,13 @@ class AdvertController extends Controller {
         );
 
         if ($page < 1) {
-            // On déclenche une exception NotFoundHttpException, cela va afficher
-            // une page d'erreur 404 (qu'on pourra personnaliser plus tard d'ailleurs)
+// On déclenche une exception NotFoundHttpException, cela va afficher
+// une page d'erreur 404 (qu'on pourra personnaliser plus tard d'ailleurs)
             throw new NotFoundHttpException('Page "' . $page . '" inexistante.');
         }
 
-        // Ici, on récupérera la liste des annonces, puis on la passera au template
-        // Mais pour l'instant, on ne fait qu'appeler le template
+// Ici, on récupérera la liste des annonces, puis on la passera au template
+// Mais pour l'instant, on ne fait qu'appeler le template
         return $this->render('OCPlatformBundle:Advert:index.html.twig', array(
                     'listAdverts' => $listAdverts
         ));
@@ -48,36 +49,53 @@ class AdvertController extends Controller {
     }
 
     public function viewAction($id) {
-        // Ici, on récupérera l'annonce correspondante à l'id $id
+        // On récupère le repository
+        $repository = $this->getDoctrine()
+                ->getManager()
+                ->getRepository('OCPlatformBundle:Advert')
+        ;
 
-        $advert = array(
-            'title' => 'Recherche développpeur Symfony2',
-            'id' => $id,
-            'author' => 'Alexandre',
-            'content' => 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…',
-            'date' => new \Datetime()
-        );
+        // On récupère l'entité correspondante à l'id $id
+        $advert = $repository->find($id);
 
+        // $advert est donc une instance de OC\PlatformBundle\Entity\Advert
+        // ou null si l'id $id  n'existe pas, d'où ce if :
+        if (null === $advert) {
+            throw new NotFoundHttpException("L'annonce d'id " . $id . " n'existe pas.");
+        }
+
+        // Le render ne change pas, on passait avant un tableau, maintenant un objet
         return $this->render('OCPlatformBundle:Advert:view.html.twig', array(
                     'advert' => $advert
         ));
     }
 
     public function addAction(Request $request) {
-        // On récupère le service
-        $antispam = $this->container->get('oc_platform.antispam');
+// Création de l'entité
+        $advert = new Advert();
+        $advert->setTitle('Recherche développeur Symfony2.');
+        $advert->setAuthor('Alexandre');
+        $advert->setContent("Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…");
+// On peut ne pas définir ni la date ni la publication,
+// car ces attributs sont définis automatiquement dans le constructeur
+// On récupère l'EntityManager
+        $em = $this->getDoctrine()->getManager();
 
-        // Je pars du principe que $text contient le texte d'un message quelconque
-        $text = '...';
-        if ($antispam->isSpam($text)) {
-            throw new \Exception('Votre message a été détecté comme spam !');
+// Étape 1 : On « persiste » l'entité
+        $em->persist($advert);
+
+// Étape 2 : On « flush » tout ce qui a été persisté avant
+        $em->flush();
+
+// Reste de la méthode qu'on avait déjà écrit
+        if ($request->isMethod('POST')) {
+            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
+            return $this->redirect($this->generateUrl('oc_platform_view', array('id' => $advert->getId())));
         }
-
-        // Ici le message n'est pas un spam
     }
 
     public function editAction($id, Request $request) {
-        // ...
+// ...
 
         $advert = array(
             'title' => 'Recherche développpeur Symfony2',
@@ -93,15 +111,15 @@ class AdvertController extends Controller {
     }
 
     public function deleteAction($id) {
-        // Ici, on récupérera l'annonce correspondant à $id
-        // Ici, on gérera la suppression de l'annonce en question
+// Ici, on récupérera l'annonce correspondant à $id
+// Ici, on gérera la suppression de l'annonce en question
 
         return $this->render('OCPlatformBundle:Advert:delete.html.twig');
     }
 
     public function menuAction() {
-        // On fixe en dur une liste ici, bien entendu par la suite
-        // on la récupérera depuis la BDD !
+// On fixe en dur une liste ici, bien entendu par la suite
+// on la récupérera depuis la BDD !
         $listAdverts = array(
             array('id' => 2, 'title' => 'Recherche développeur Symfony2'),
             array('id' => 5, 'title' => 'Mission de webmaster'),
@@ -109,8 +127,8 @@ class AdvertController extends Controller {
         );
 
         return $this->render('OCPlatformBundle:Advert:menu.html.twig', array(
-                    // Tout l'intérêt est ici : le contrôleur passe
-                    // les variables nécessaires au template !
+// Tout l'intérêt est ici : le contrôleur passe
+// les variables nécessaires au template !
                     'listAdverts' => $listAdverts
         ));
     }

@@ -7,52 +7,82 @@ class __TwigTemplate_4823756285da321b77a05372d616f39891c4f93eb32ff9ac2d004161dd5
     {
         parent::__construct($env);
 
-        $this->parent = false;
+        $this->parent = $this->env->loadTemplate("OCPlatformBundle::layout.html.twig");
 
         $this->blocks = array(
+            'title' => array($this, 'block_title'),
+            'ocplatform_body' => array($this, 'block_ocplatform_body'),
         );
+    }
+
+    protected function doGetParent(array $context)
+    {
+        return "OCPlatformBundle::layout.html.twig";
     }
 
     protected function doDisplay(array $context, array $blocks = array())
     {
-        // line 2
-        echo "
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Bienvenue sur ma première page avec OpenClassrooms !</title>
-    </head>
-    <body>
-        <h1>Affichage d'une annonce</h1>
+        $this->parent->display($context, array_merge($this->blocks, $blocks));
+    }
 
-        <p>
-            ";
-        // line 13
-        echo "            ";
-        $context['_parent'] = (array) $context;
-        $context['_seq'] = twig_ensure_traversable($this->getAttribute($this->getAttribute($this->getAttribute((isset($context["app"]) ? $context["app"] : $this->getContext($context, "app")), "session"), "flashbag"), "get", array(0 => "info"), "method"));
-        foreach ($context['_seq'] as $context["_key"] => $context["message"]) {
-            // line 14
-            echo "            <p>Message flash : ";
-            echo twig_escape_filter($this->env, (isset($context["message"]) ? $context["message"] : $this->getContext($context, "message")), "html", null, true);
-            echo "</p>
+    // line 5
+    public function block_title($context, array $blocks = array())
+    {
+        // line 6
+        echo "    Lecture d'une annonce - ";
+        $this->displayParentBlock("title", $context, $blocks);
+        echo "
+";
+    }
+
+    // line 9
+    public function block_ocplatform_body($context, array $blocks = array())
+    {
+        // line 10
+        echo "
+    <h2>";
+        // line 11
+        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "title"), "html", null, true);
+        echo "</h2>
+    <i>Par ";
+        // line 12
+        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "author"), "html", null, true);
+        echo ", le ";
+        echo twig_escape_filter($this->env, twig_date_format_filter($this->env, $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "date"), "d/m/Y"), "html", null, true);
+        echo "</i>
+
+    <div class=\"well\">
         ";
-        }
-        $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['message'], $context['_parent'], $context['loop']);
-        $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 16
-        echo "    </p>
+        // line 15
+        echo twig_escape_filter($this->env, $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "content"), "html", null, true);
+        echo "
+    </div>
 
     <p>
-        Ici nous pourrons lire l'annonce ayant comme id : ";
+        <a href=\"";
         // line 19
-        echo twig_escape_filter($this->env, (isset($context["id"]) ? $context["id"] : $this->getContext($context, "id")), "html", null, true);
-        echo "<br />
-        Mais pour l'instant, nous ne savons pas encore le faire, cela viendra !
+        echo $this->env->getExtension('routing')->getPath("oc_platform_home");
+        echo "\" class=\"btn btn-default\">
+            <i class=\"glyphicon glyphicon-chevron-left\"></i>
+            Retour à la liste
+        </a>
+        <a href=\"";
+        // line 23
+        echo twig_escape_filter($this->env, $this->env->getExtension('routing')->getPath("oc_platform_edit", array("id" => $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "id"))), "html", null, true);
+        echo "\" class=\"btn btn-default\">
+            <i class=\"glyphicon glyphicon-edit\"></i>
+            Modifier l'annonce
+        </a>
+        <a href=\"";
+        // line 27
+        echo twig_escape_filter($this->env, $this->env->getExtension('routing')->getPath("oc_platform_delete", array("id" => $this->getAttribute((isset($context["advert"]) ? $context["advert"] : $this->getContext($context, "advert")), "id"))), "html", null, true);
+        echo "\" class=\"btn btn-danger\">
+            <i class=\"glyphicon glyphicon-trash\"></i>
+            Supprimer l'annonce
+        </a>
     </p>
-</body>
-</html>";
+
+";
     }
 
     public function getTemplateName()
@@ -67,6 +97,6 @@ class __TwigTemplate_4823756285da321b77a05372d616f39891c4f93eb32ff9ac2d004161dd5
 
     public function getDebugInfo()
     {
-        return array (  50 => 19,  45 => 16,  36 => 14,  31 => 13,  19 => 2,);
+        return array (  78 => 27,  71 => 23,  64 => 19,  57 => 15,  49 => 12,  45 => 11,  42 => 10,  39 => 9,  32 => 6,  29 => 5,);
     }
 }

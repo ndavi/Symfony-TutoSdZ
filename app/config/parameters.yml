@@ -15,4 +15,3 @@ parameters:
     debug_toolbar: true
     debug_redirects: true
     use_assetic_controller: true
-    app_webmaster: Nicolas David

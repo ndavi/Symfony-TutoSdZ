@@ -11,22 +11,22 @@ use OC\PlatformBundle\Entity\Application;
 
 class LoadAdvert implements FixtureInterface {
 
-    // Dans l'argument de la m�thode load, l'objet $manager est l'EntityManager
+    // Dans l'argument de la m�thode load, l'objet $manager est l'EntityManager
     public function load(ObjectManager $manager) {
         $advert = new Advert();
-        $advert->setTitle('Recherche d�veloppeur Symfony2.');
+        $advert->setTitle('Recherche développeur Symfony2.');
         $advert->setAuthor('Alexandre');
         $advert->setContent("Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…");
 
         // Création d'une première candidature
         $application1 = new Application();
         $application1->setAuthor('Marine');
-        $application1->setContent("J'ai toutes les qualit�s requises.");
+        $application1->setContent("J'ai toutes les qualit�s requises.");
 
         // Création d'une deuxième candidature par exemple
         $application2 = new Application();
         $application2->setAuthor('Pierre');
-        $application2->setContent("Je suis tr�s motiv�.");
+        $application2->setContent("Je suis très motivé.");
 
         // On lie les candidatures à l'annonce
         $application1->setAdvert($advert);

@@ -10,19 +10,19 @@ use OC\PlatformBundle\Entity\Category;
 
 class LoadCategory implements FixtureInterface {
 
-    // Dans l'argument de la méthode load, l'objet $manager est l'EntityManager
+    // Dans l'argument de la mï¿½thode load, l'objet $manager est l'EntityManager
     public function load(ObjectManager $manager) {
-        // Liste des noms de catégorie à ajouter
+        // Liste des noms de catï¿½gorie ï¿½ ajouter
         $names = array(
-            'Développement web',
-            'Développement mobile',
+            'DÃ©veloppement web',
+            'DÃ©veloppement mobile',
             'Graphisme',
-            'Intégration',
-            'Réseau'
+            'IntÃ©gration',
+            'RÃ©seau'
         );
 
         foreach ($names as $name) {
-            // On crée la catégorie
+            // On crï¿½e la catï¿½gorie
             $category = new Category();
             $category->setName($name);
 
@@ -30,7 +30,7 @@ class LoadCategory implements FixtureInterface {
             $manager->persist($category);
         }
 
-        // On déclenche l'enregistrement de toutes les catégories
+        // On dï¿½clenche l'enregistrement de toutes les catï¿½gories
         $manager->flush();
     }
 

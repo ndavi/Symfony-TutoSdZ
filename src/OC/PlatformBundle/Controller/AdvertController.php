@@ -10,6 +10,7 @@ use OC\PlatformBundle\Entity\Advert;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use OC\PlatformBundle\Entity\AdvertSkill;
 
 class AdvertController extends Controller {
 
@@ -53,7 +54,7 @@ class AdvertController extends Controller {
     public function viewAction($id) {
         $em = $this->getDoctrine()->getManager();
 
-        // On r√©cup√®re l'annonce $id
+        // On rÈcupËre l'annonce $id
         $advert = $em
                 ->getRepository('OCPlatformBundle:Advert')
                 ->find($id)
@@ -63,51 +64,61 @@ class AdvertController extends Controller {
             throw new NotFoundHttpException("L'annonce d'id " . $id . " n'existe pas.");
         }
 
-        // On r√©cup√®re la liste des candidatures de cette annonce
+        // On avait dÈj‡ rÈcupÈrÈ la liste des candidatures
         $listApplications = $em
                 ->getRepository('OCPlatformBundle:Application')
                 ->findBy(array('advert' => $advert))
         ;
 
+        // On rÈcupËre maintenant la liste des AdvertSkill
+        $listAdvertSkills = $em
+                ->getRepository('OCPlatformBundle:AdvertSkill')
+                ->findBy(array('advert' => $advert))
+        ;
+
         return $this->render('OCPlatformBundle:Advert:view.html.twig', array(
                     'advert' => $advert,
-                    'listApplications' => $listApplications
+                    'listApplications' => $listApplications,
+                    'listAdvertSkills' => $listAdvertSkills
         ));
     }
 
     public function addAction(Request $request) {
 // Cr√©ation de l'entit√© Advert
-        $advert = new Advert();
-        $advert->setTitle('Recherche d√©veloppeur Symfony2.');
-        $advert->setAuthor('Alexandre');
-        $advert->setContent("Nous recherchons un d√©veloppeur Symfony2 d√©butant sur Lyon. Blabla‚Ä¶");
-
-        // Cr√©ation d'une premi√®re candidature
-        $application1 = new Application();
-        $application1->setAuthor('Marine');
-        $application1->setContent("J'ai toutes les qualit√©s requises.");
-
-        // Cr√©ation d'une deuxi√®me candidature par exemple
-        $application2 = new Application();
-        $application2->setAuthor('Pierre');
-        $application2->setContent("Je suis tr√®s motiv√©.");
-
-        // On lie les candidatures √† l'annonce
-        $application1->setAdvert($advert);
-        $application2->setAdvert($advert);
-
-        // On r√©cup√®re l'EntityManager
+        // On rÈcupËre l'EntityManager
         $em = $this->getDoctrine()->getManager();
 
-        // √âtape 1 : On ¬´ persiste ¬ª l'entit√©
+        // CrÈation de l'entitÈ Advert
+        $advert = new Advert();
+        $advert->setTitle('Recherche dÈveloppeur Symfony2.');
+        $advert->setAuthor('Alexandre');
+        $advert->setContent("Nous recherchons un dÈveloppeur Symfony2 dÈbutant sur Lyon. BlablaÖ");
+
+        // On rÈcupËre toutes les compÈtences possibles
+        $listSkills = $em->getRepository('OCPlatformBundle:Skill')->findAll();
+
+        // Pour chaque compÈtence
+        foreach ($listSkills as $skill) {
+            // On crÈe une nouvelle ´ relation entre 1 annonce et 1 compÈtence ª
+            $advertSkill = new AdvertSkill();
+
+            // On la lie ‡ l'annonce, qui est ici toujours la mÍme
+            $advertSkill->setAdvert($advert);
+            // On la lie ‡ la compÈtence, qui change ici dans la boucle foreach
+            $advertSkill->setSkill($skill);
+
+            // Arbitrairement, on dit que chaque compÈtence est requise au niveau 'Expert'
+            $advertSkill->setLevel('Expert');
+
+            // Et bien s˚r, on persiste cette entitÈ de relation, propriÈtaire des deux autres relations
+            $em->persist($advertSkill);
+        }
+
+        // Doctrine ne connait pas encore l'entitÈ $advert. Si vous n'avez pas dÈfinit la relation AdvertSkill
+        // avec un cascade persist (ce qui est le cas si vous avez utilisÈ mon code), alors on doit persister $advert
         $em->persist($advert);
 
-        // √âtape 1 bis : pour cette relation pas de cascade lorsqu'on persiste Advert, car la relation est
-        // d√©finie dans l'entit√© Application et non Advert. On doit donc tout persister √† la main ici.
-        $em->persist($application1);
-        $em->persist($application2);
-
-        // √âtape 2 : On ¬´ flush ¬ª tout ce qui a √©t√© persist√© avant
+        // On dÈclenche l'enregistrement
         $em->flush();
 
         // ‚Ä¶ reste de la m√©thode

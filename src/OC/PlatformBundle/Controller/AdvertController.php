@@ -16,27 +16,6 @@ class AdvertController extends Controller {
 
     public function indexAction($page) {
 
-        $listAdverts = array(
-            array(
-                'title' => 'Recherche d√©velopppeur Symfony2',
-                'id' => 1,
-                'author' => 'Alexandre',
-                'content' => 'Nous recherchons un d√©veloppeur Symfony2 d√©butant sur Lyon. Blabla‚Ä¶',
-                'date' => new \Datetime()),
-            array(
-                'title' => 'Mission de webmaster',
-                'id' => 2,
-                'author' => 'Hugo',
-                'content' => 'Nous recherchons un webmaster capable de maintenir notre site internet. Blabla‚Ä¶',
-                'date' => new \Datetime()),
-            array(
-                'title' => 'Offre de stage webdesigner',
-                'id' => 3,
-                'author' => 'Mathieu',
-                'content' => 'Nous proposons un poste pour webdesigner. Blabla‚Ä¶',
-                'date' => new \Datetime())
-        );
-
         if ($page < 1) {
 // On d√©clenche une exception NotFoundHttpException, cela va afficher
 // une page d'erreur 404 (qu'on pourra personnaliser plus tard d'ailleurs)
@@ -54,7 +33,7 @@ class AdvertController extends Controller {
     public function viewAction($id) {
         $em = $this->getDoctrine()->getManager();
 
-        // On rÈcupËre l'annonce $id
+        // On rÔøΩcupÔøΩre l'annonce $id
         $advert = $em
                 ->getRepository('OCPlatformBundle:Advert')
                 ->find($id)
@@ -64,17 +43,20 @@ class AdvertController extends Controller {
             throw new NotFoundHttpException("L'annonce d'id " . $id . " n'existe pas.");
         }
 
-        // On avait dÈj‡ rÈcupÈrÈ la liste des candidatures
+        // On avait dÔøΩjÔøΩ rÔøΩcupÔøΩrÔøΩ la liste des candidatures
         $listApplications = $em
                 ->getRepository('OCPlatformBundle:Application')
                 ->findBy(array('advert' => $advert))
         ;
 
-        // On rÈcupËre maintenant la liste des AdvertSkill
+        // On rÔøΩcupÔøΩre maintenant la liste des AdvertSkill
         $listAdvertSkills = $em
                 ->getRepository('OCPlatformBundle:AdvertSkill')
                 ->findBy(array('advert' => $advert))
         ;
+        
+        //$advert->setTitle("Changement de Titre");
+        //$em->flush();
 
         return $this->render('OCPlatformBundle:Advert:view.html.twig', array(
                     'advert' => $advert,
@@ -85,40 +67,40 @@ class AdvertController extends Controller {
 
     public function addAction(Request $request) {
 // Cr√©ation de l'entit√© Advert
-        // On rÈcupËre l'EntityManager
+        // On rÔøΩcupÔøΩre l'EntityManager
         $em = $this->getDoctrine()->getManager();
 
-        // CrÈation de l'entitÈ Advert
+        // CrÔøΩation de l'entitÔøΩ Advert
         $advert = new Advert();
-        $advert->setTitle('Recherche dÈveloppeur Symfony2.');
+        $advert->setTitle('Recherche dÔøΩveloppeur Symfony2.');
         $advert->setAuthor('Alexandre');
-        $advert->setContent("Nous recherchons un dÈveloppeur Symfony2 dÈbutant sur Lyon. BlablaÖ");
+        $advert->setContent("Nous recherchons un dÔøΩveloppeur Symfony2 dÔøΩbutant sur Lyon. BlablaÔøΩ");
 
-        // On rÈcupËre toutes les compÈtences possibles
+        // On rÔøΩcupÔøΩre toutes les compÔøΩtences possibles
         $listSkills = $em->getRepository('OCPlatformBundle:Skill')->findAll();
 
-        // Pour chaque compÈtence
+        // Pour chaque compÔøΩtence
         foreach ($listSkills as $skill) {
-            // On crÈe une nouvelle ´ relation entre 1 annonce et 1 compÈtence ª
+            // On crÔøΩe une nouvelle ÔøΩ relation entre 1 annonce et 1 compÔøΩtence ÔøΩ
             $advertSkill = new AdvertSkill();
 
-            // On la lie ‡ l'annonce, qui est ici toujours la mÍme
+            // On la lie ÔøΩ l'annonce, qui est ici toujours la mÔøΩme
             $advertSkill->setAdvert($advert);
-            // On la lie ‡ la compÈtence, qui change ici dans la boucle foreach
+            // On la lie ÔøΩ la compÔøΩtence, qui change ici dans la boucle foreach
             $advertSkill->setSkill($skill);
 
-            // Arbitrairement, on dit que chaque compÈtence est requise au niveau 'Expert'
+            // Arbitrairement, on dit que chaque compÔøΩtence est requise au niveau 'Expert'
             $advertSkill->setLevel('Expert');
 
-            // Et bien s˚r, on persiste cette entitÈ de relation, propriÈtaire des deux autres relations
+            // Et bien sÔøΩr, on persiste cette entitÔøΩ de relation, propriÔøΩtaire des deux autres relations
             $em->persist($advertSkill);
         }
 
-        // Doctrine ne connait pas encore l'entitÈ $advert. Si vous n'avez pas dÈfinit la relation AdvertSkill
-        // avec un cascade persist (ce qui est le cas si vous avez utilisÈ mon code), alors on doit persister $advert
+        // Doctrine ne connait pas encore l'entitÔøΩ $advert. Si vous n'avez pas dÔøΩfinit la relation AdvertSkill
+        // avec un cascade persist (ce qui est le cas si vous avez utilisÔøΩ mon code), alors on doit persister $advert
         $em->persist($advert);
 
-        // On dÈclenche l'enregistrement
+        // On dÔøΩclenche l'enregistrement
         $em->flush();
 
         // ‚Ä¶ reste de la m√©thode

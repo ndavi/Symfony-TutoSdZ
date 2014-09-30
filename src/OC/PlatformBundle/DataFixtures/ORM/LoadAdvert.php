@@ -21,7 +21,7 @@ class LoadAdvert implements FixtureInterface {
         // Création d'une première candidature
         $application1 = new Application();
         $application1->setAuthor('Marine');
-        $application1->setContent("J'ai toutes les qualit�s requises.");
+        $application1->setContent("J'ai toutes les qualités requises.");
 
         // Création d'une deuxième candidature par exemple
         $application2 = new Application();

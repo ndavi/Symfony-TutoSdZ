@@ -15,7 +15,7 @@ class LoadAdvert implements FixtureInterface {
     public function load(ObjectManager $manager) {
         $advert = new Advert();
         $advert->setTitle('Recherche développeur Symfony2.');
-        $advert->setAuthor('Alexandre');
+        $advert->setAuthor('Alexandre'); // Erreur RFC ???
         $advert->setContent("Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…");
 
         // Création d'une première candidature

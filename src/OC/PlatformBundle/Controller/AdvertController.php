@@ -11,10 +11,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use OC\PlatformBundle\Entity\AdvertSkill;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdvertController extends Controller {
 
     public function indexAction($page) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $listAdverts = $em->getRepository('OCPlatformBundle:Advert')
+                ->findAll();
 
         if ($page < 1) {
 // On déclenche une exception NotFoundHttpException, cela va afficher
@@ -54,7 +60,7 @@ class AdvertController extends Controller {
                 ->getRepository('OCPlatformBundle:AdvertSkill')
                 ->findBy(array('advert' => $advert))
         ;
-        
+
         //$advert->setTitle("Changement de Titre");
         //$em->flush();
 
@@ -147,6 +153,19 @@ class AdvertController extends Controller {
 // les variables nécessaires au template !
                     'listAdverts' => $listAdverts
         ));
+    }
+
+    public function testAction() {
+        $advert = new Advert();
+        $advert->setTitle("Recherche développeur !");
+        $advert->setAuthor("Nicolas");
+        $advert->setContent("LocalHost/TutoSdz");
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($advert);
+        $em->flush(); // C'est à ce moment qu'est généré le slug
+
+        return new Response('Slug généré : ' . $advert->getSlug());
+        // Affiche « Slug généré : recherche-developpeur »
     }
 
 }
